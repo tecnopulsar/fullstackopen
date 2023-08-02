@@ -9,7 +9,7 @@ function App() {
   const [selected, setSelected] = useState(Math.floor(Math.random() * anecdotes.length))
   const [yaVoto, setyaVoto] = useState(false)
   const [votos, setVotos] = useState(objVotosInicial)
-  const [anecdotaMasVotos, setAnecdotaMasVotos] = useState('')
+  const [indexMasVotos, setIndexaMasVotos] = useState(0)
 
   const handClick = () => {
     const numRandom = Math.floor(Math.random() * anecdotes.length)
@@ -22,38 +22,27 @@ function App() {
     const copia = [...votos];
     copia[selected] += 1;
     setVotos(copia)
+    if (copia[selected] > votos[indexMasVotos]) {
+      setIndexaMasVotos(selected)
+    }
   }
 
-  const objOrdenado = () => {
-    const copyArray = votos;
-    copyArray.sort((a, b) => {
-      return Number.parseInt(b) - Number.parseInt(a)
-    })
-    return copyArray[0]
-  }
-
-  const buscarMaxVotos = () => {
-    const maxVotos = objOrdenado();
-    return maxVotos;
-  }
-  const maxAnecdotas = () => {
-    const valorabuscar = buscarMaxVotos()
-    const frase = anecdotes[votos.indexOf(valorabuscar)];
-    return frase
+  const alguienVoto = () => {
+    return votos.reduce((acc, value) => acc + value)
   }
 
   return (
     <>
       <h2>{anecdotes[selected]}</h2>
-      <h3>Cantidad de Me Gusta: {votos[selected.toString()]}</h3>
+      <h3>Cantidad de Votos: {votos[selected.toString()]}</h3>
       <br />
       {!yaVoto ? <button onClick={handClickVote}>Votar Me Gusta</button> : <button disabled>Votar Me Gusta</button>}
       <button onClick={handClick}>Proxima anecdota</button>
       <br />
-      {buscarMaxVotos() > 0 && <>
+      {alguienVoto() > 0 && <>
         <h2>Anecdota con mas votos</h2>
-        <h3>{maxAnecdotas()}</h3>
-        <h3>Con {buscarMaxVotos()} votos</h3>
+        <h3>{anecdotes[indexMasVotos]}</h3>
+        <h3>Con {votos[indexMasVotos]} votos</h3>
       </>
       }
 
