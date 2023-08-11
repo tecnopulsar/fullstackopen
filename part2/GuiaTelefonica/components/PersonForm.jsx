@@ -1,23 +1,41 @@
 import React, { useState } from 'react'
+import crudServices from '../services/crud'
 
-function PersonForm({persons, setPersons}) {
+function PersonForm({ persons, setPersons, setSuccessMessage }) {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setNewName('');
         setNewNumber('');
-
-
+        // array de person
+        let personFinded = persons.filter((item) => (item.name).toLowerCase() === (newName).toLowerCase());
         // Controlar que el nombre ya no este registrado
-        if ((persons.filter((item) => (item.name).toLowerCase() === (newName).toLowerCase())).length === 0) {
+        if (personFinded.length === 0) {
             const newPerson = {
                 name: newName,
                 number: newNumber
             }
-            setPersons(persons.concat(newPerson))
+            crudServices
+                .create(newPerson)
+                // .then(returnedPerson => setPersons(persons.concat(returnedPerson)))
+                .then(createPerson => {
+                    setSuccessMessage(`${createPerson.name} registrado`)
+                    setTimeout(() => setSuccessMessage(null), 3000)
+                })
         } else {
-            alert(`${newName} ya se encuentra registrado`)
+            const confirmChange = confirm(`${newName} ya se encuentra registrado, desea actualizar el numero registrado`)
+            if (confirmChange) {
+                personFinded[0].number = newNumber
+                crudServices
+                    .update(personFinded[0].id, personFinded[0])
+                    .then(updatePerson => {
+                        setSuccessMessage(`${updatePerson.name} actualizado`)
+                        setTimeout(() => setSuccessMessage(null), 3000)
+                    })
+            }
+
         }
     }
     const handleNameChange = (e) => {

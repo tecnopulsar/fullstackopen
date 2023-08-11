@@ -1,31 +1,46 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import Persons from './components/Persons'
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
-
+import crudService from './services/crud'
+import NotificationError from '../Notes/NotificationError';
+import NotificationSuccess from './components/NotificationSuccess';
 
 function index() {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '040-123456' },
-        { name: 'Ada Lovelace', number: '39-44-5323523' },
-        { name: 'Dan Abramov', number: '12-43-234345' },
-        { name: 'Mary Poppendieck', number: '39-23-6423122' }
-    ])
-    const [showAll, setShowAll] = useState(true);
-    const [filterName, setFilterName] = useState('')
+  const [persons, setPersons] = useState([
+  ])
+  const [showAll, setShowAll] = useState(true);
+  const [filterName, setFilterName] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
+  useEffect(() => {
+    crudService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+  }, [persons])
 
-    return (
-        <div>
-            <h2>Phonebook</h2>
-            <Filter filterName={filterName} setFilterName={setFilterName} />
-            <h2>add a new</h2>
-            <PersonForm persons={persons} setPersons={setPersons} />
-            <h2>Numbers</h2>
-            <Persons persons={persons} filterName={filterName} />
-        </div>
-    )
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <NotificationError message={errorMessage} />
+      <NotificationSuccess message={successMessage} />
+      <Filter filterName={filterName} setFilterName={setFilterName} />
+      <h2>add a new</h2>
+      <PersonForm persons={persons} setPersons={setPersons} setSuccessMessage={setSuccessMessage} />
+      <h2>Numbers</h2>
+      <Persons 
+        persons={persons} 
+        setPersons={setPersons} 
+        filterName={filterName} 
+        setSuccessMessage={setSuccessMessage} 
+        setErrorMessage={setErrorMessage} 
+        />
+    </div>
+  )
 }
 
 export default index

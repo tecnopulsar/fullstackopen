@@ -1,8 +1,11 @@
 import React from 'react'
 
-function Person({person}) {
+function Person({person, handleRemove}) {
   return (
-    <div>{person.name} {person.number}</div>
+    <div>
+      {person.name} {person.number}
+      <button type='' onClick={handleRemove}>remove</button>  
+    </div>
   )
 }
 
